@@ -7,42 +7,25 @@ import { PrismaClient } from "@prisma/client";
 const PORT = process.env.PORT || 3000;
 const app = express();
 const prisma = new PrismaClient();
-<<<<<<< HEAD
-const PORT = process.env.PORT || 3000;
 
 // ✅ Multer memory storage (required for Vercel)
-=======
-
-// Use multer with memory storage to avoid disk writes (important for serverless environments)
->>>>>>> e00db50d13283f11f27bf138041384254c412080
 const upload = multer({ storage: multer.memoryStorage() });
 
 app.use(express.json());
 
-<<<<<<< HEAD
-// ✅ Home route (for testing)
-=======
->>>>>>> e00db50d13283f11f27bf138041384254c412080
+// ✅ Home route
 app.get("/", (req, res) => {
   res.json({ message: "Server is live..." });
 });
 
-<<<<<<< HEAD
 // ✅ POST /import/customers
-=======
-// POST /import/customers
->>>>>>> e00db50d13283f11f27bf138041384254c412080
 app.post("/import/customers", upload.single("file"), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
     }
 
-<<<<<<< HEAD
-    // ✅ Read file from memory buffer
-=======
-    // Read workbook from the uploaded file buffer
->>>>>>> e00db50d13283f11f27bf138041384254c412080
+    // ✅ Read Excel from memory buffer
     const workbook = XLSX.read(req.file.buffer, { type: "buffer" });
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const rows = XLSX.utils.sheet_to_json(sheet);
@@ -53,10 +36,7 @@ app.post("/import/customers", upload.single("file"), async (req, res) => {
     for (const row of rows) {
       const { fullName, email, phone, city, joinedAt } = row;
 
-<<<<<<< HEAD
-=======
-      // Validate required fields
->>>>>>> e00db50d13283f11f27bf138041384254c412080
+      // ✅ Validate required fields
       if (!fullName || !email || !phone || !city || !joinedAt) {
         invalidRows.push(row);
         continue;
@@ -71,11 +51,7 @@ app.post("/import/customers", upload.single("file"), async (req, res) => {
       });
     }
 
-<<<<<<< HEAD
     // ✅ Insert into DB
-=======
-    // Insert valid rows, skip duplicates
->>>>>>> e00db50d13283f11f27bf138041384254c412080
     await prisma.customer.createMany({
       data: validRows,
       skipDuplicates: true,
@@ -92,7 +68,7 @@ app.post("/import/customers", upload.single("file"), async (req, res) => {
   }
 });
 
-// GET /customers
+// ✅ GET /customers
 app.get("/customers", async (req, res) => {
   try {
     const customers = await prisma.customer.findMany({
@@ -105,15 +81,10 @@ app.get("/customers", async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
-// ✅ Start Express server locally
-// (Vercel will ignore this when deployed)
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
-
-export default app; // ✅ Required for Vercel
-=======
-// Start server
+// ✅ Local server (ignored on Vercel)
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
->>>>>>> e00db50d13283f11f27bf138041384254c412080
+
+// ✅ Required by Vercel to run Express
+export default app;
